@@ -75,7 +75,6 @@ class TestSensor(unittest.TestCase):
             None,
             None,
         )
-        print(transaction_dict)
 
         ##
         ## submit transaction
@@ -125,7 +124,6 @@ class TestSensor(unittest.TestCase):
             None,
             [dumps([1, 2, 3])],
         )
-        print(transaction_dict)
 
         ##
         ## submit transaction
@@ -176,14 +174,14 @@ class TestSensor(unittest.TestCase):
             [dumps([1, 2, 3])],
         )
 
-        # read data 
+        # read data
         new_sensor = add_data_transaction['transaction']['outputs'][0]
         read_transaction = sensor_contract.read(
             None,
             (new_sensor,),
             None
         )
-        print(read_transaction['transaction']['returns'])
+        print read_transaction['transaction']['returns']
 
 
         ##
