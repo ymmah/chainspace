@@ -7,19 +7,30 @@ from matplotlib import markers
 from chainspacemeasurements.results import parse_shard_results, parse_client_latency_results
 
 
-def plot_shard_scaling(results, outfile):
-    parsed_results = parse_shard_results(results)
+def plot_shard_scaling(results1, results2=None, outfile):
+    parsed_results1 = parse_shard_results(results1)
+    if results2 != None:
+        parsed_results2 = parse_shard_results(results2)
+
     pyplot.xlabel('Number of shards')
     pyplot.ylabel('Average transactions / second')
     pyplot.grid(True)
 
     pyplot.errorbar(
-        range(2, len(parsed_results)+2),
-        [i[0] for i in parsed_results],
-        [i[1] for i in parsed_results],
+        range(2, len(parsed_results1)+2),
+        [i[0] for i in parsed_results1],
+        [i[1] for i in parsed_results1],
         marker='o',
         #color='black',
     )
+    if results2 != None:
+        pyplot.errorbar(
+            range(2, len(parsed_results2)+2),
+            [i[0] for i in parsed_results2],
+            [i[1] for i in parsed_results2],
+            marker='o',
+            #color='black',
+        )
 
     pyplot.savefig(outfile)
     pyplot.close()
@@ -129,11 +140,11 @@ def plot_client_latency(results, outfile, start_tps, step):
 if __name__ == '__main__':
     if sys.argv[1] == 'shardscaling':
         results = json.loads(open(sys.argv[2]).read())
-        plot_shard_scaling(results, sys.argv[3])
-    elif sys.argv[1] == 'shardscaling2':
+        plot_shard_scaling(results, None, sys.argv[3])
+    if sys.argv[1] == 'shardscaling2':
         results1 = json.loads(open(sys.argv[2]).read())
         results2 = json.loads(open(sys.argv[3]).read())
-        plot_shard_scaling2(results1, results2, sys.argv[4])
+        plot_shard_scaling(results1, results2, sys.argv[4])
     elif sys.argv[1] == 'inputscaling':
         results = json.loads(open(sys.argv[2]).read())
         plot_input_scaling(results, sys.argv[3])
