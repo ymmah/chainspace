@@ -114,7 +114,7 @@ class Test(unittest.TestCase):
         ##
         # set up info and options
         UUID = "1234"
-        info = "Here goes what the petition is about."
+        info = "Petition UUID -- Here goes what the petition is about."
         options = ['YES', 'NO']
 
         # init
