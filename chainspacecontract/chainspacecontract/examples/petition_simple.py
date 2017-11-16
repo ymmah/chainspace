@@ -1,4 +1,5 @@
 """
+=======
 	A simple smart contract illustarting an insecure e-petition.
 
 	The main problems are:
