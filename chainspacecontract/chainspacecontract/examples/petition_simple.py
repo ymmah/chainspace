@@ -1,4 +1,4 @@
-""" 
+"""
 	A simple smart contract illustarting an insecure e-petition.
 
 	The main problems are:
@@ -34,7 +34,7 @@ def init():
 
 # ------------------------------------------------------------------
 # create petition
-# NOTE: 
+# NOTE:
 #   - only 'inputs', 'reference_inputs' and 'parameters' are used to the framework
 #   - if there are more than 3 param, the checker has to be implemented by hand
 # ------------------------------------------------------------------
@@ -66,7 +66,7 @@ def add_score(inputs, reference_inputs, parameters):
     old_petition = loads(inputs[0])
     new_petition = loads(inputs[0])
     added_scores = loads(parameters[0])
-    
+
     # update scores
     for i in range(0,len(added_scores)):
         new_petition['scores'][i] = old_petition['scores'][i] + added_scores[i]
@@ -105,7 +105,7 @@ def create_petition_checker(inputs, reference_inputs, parameters, outputs, retur
 
         # check format
         if len(inputs) != 1 or len(reference_inputs) != 0 or len(outputs) != 2 or len(returns) != 0:
-            return False 
+            return False
         if len(options) < 1 or len(options) != len(scores):
             return False
 
@@ -144,7 +144,7 @@ def add_vote_checker(inputs, reference_inputs, parameters, outputs, returns, dep
 
 		# check format
 		if len(inputs) != 1 or len(reference_inputs) != 0 or len(outputs) != 1 or len(returns) != 0:
-			return False 
+			return False
 		if len(options) < 1 or len(options) != len(scores):
 			return False
 
@@ -186,7 +186,7 @@ def read_checker(inputs, reference_inputs, parameters, outputs, returns, depende
 
         # check format
         if len(inputs) != 0 or len(reference_inputs) != 1 or len(outputs) != 0 or len(returns) != 1:
-            return False 
+            return False
 
         # check values
         if reference_inputs[0] != returns[0]:
