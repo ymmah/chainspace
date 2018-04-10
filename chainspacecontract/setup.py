@@ -9,5 +9,8 @@ setup(
         'flask',
         'requests',
         'click',
+        'petlib',
+        'bplib',
+        'numpy',
     ],
 )
