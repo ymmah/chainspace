@@ -97,5 +97,5 @@ for result in results:
     if not (result[0] == 'True'):
         all_ok = False
 
-print "\n\nRESULT OF ALL CONTRACT CALLS: " + str(all_ok) + "\n\n"
-print "\n\nTime Taken " + str(datetime.now() - start_time) + "\n\n"
+print "\n\nRESULT OF ALL CONTRACT CALLS: " + str(all_ok) + "\n"
+print "Time Taken " + str(datetime.now() - start_time) + "\n\n"
