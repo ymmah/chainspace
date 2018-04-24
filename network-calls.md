@@ -1,5 +1,11 @@
 # Network calls in chainspace
 
+## Configuring the networking to use a socks proxy:
+
+http://java.sun.com/javase/6/docs/technotes/guides/net/proxies.html
+
+
+
 ## Submit Transaction
 Client api sends "TRANSACTION_SUBMIT" to the shard. (MapClient.java send_TRANSACTION_SUBMIT_toShard
 
