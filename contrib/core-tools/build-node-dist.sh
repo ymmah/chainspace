@@ -5,7 +5,7 @@ DIST=chainspacecore/target/dist
 NODE_0_0=${DIST}/node_0_0
 
 UBER_JAR=`ls chainspacecore/target/chainspace*-with-dependencies.jar`
-BFT_JAR=`ls chainspacecore/lib/bft-smart*-UCL.jar`
+BFT_JAR=`ls chainspacecore/lib/bft-smart*-DECODE.jar`
 DIST_TEMPLATE=contrib/core-tools/node-dist-template
 CONTRACT_DIR=chainspacecore/contracts
 

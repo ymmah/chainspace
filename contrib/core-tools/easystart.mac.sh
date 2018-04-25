@@ -1,7 +1,7 @@
 #!/bin/bash
 rm -rf chainspacecore-*
 
-BFT_SMART_LIB=lib/bft-smart-1.2.2-UCL.jar
+BFT_SMART_LIB=lib/bft-smart-1.0.0-DECODE.jar
 
 cp -r chainspacecore chainspacecore-0-0
 cd chainspacecore-0-0
