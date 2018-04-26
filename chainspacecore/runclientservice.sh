@@ -2,7 +2,7 @@
 
 
 
-BFT_SMART_LIB=lib/bft-smart-1.2-UCL.jar
+BFT_SMART_LIB=lib/bft-smart-1.0.0-DECODE.jar
 CLIENT_API_DB=../chainspacecore-0-0/database
 
 rm config/currentView
