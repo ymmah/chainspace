@@ -33,15 +33,6 @@
               "on_cancel" : null,
               "command": "make",
               "arguments": [
-                "build-jar"
-              ]
-            },
-            {
-              "type": "exec",
-              "run_if": "passed",
-              "on_cancel" : null,
-              "command": "make",
-              "arguments": [
                 "test"
               ]
             }
