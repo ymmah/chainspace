@@ -10,7 +10,9 @@ list-nodes:
 build-jar:
 	cd chainspacecore && mvn -Dversion=1.0-SNAPSHOT package assembly:single
 
-dist:
+test:
+	./contrib/deploy/test.sh
+dst:
 	./contrib/core-tools/build-node-dist.sh
 
 start-nodes:
@@ -31,7 +33,5 @@ curl-client-api:
 
 kill-all:
 	ps aux | grep -v grep | grep chainspace | awk '{print $$2}' | xargs kill
-
-
 
 
