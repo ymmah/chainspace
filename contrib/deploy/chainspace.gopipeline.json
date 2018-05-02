@@ -5,7 +5,8 @@
   "materials": [
     {
       "url": "https://github.com/DECODEproject/chainspace.git",
-      "type": "git"
+      "type": "git",
+      "branch": "xplore"
     }
   ],
   "stages": [
