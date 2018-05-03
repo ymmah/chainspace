@@ -30,12 +30,6 @@ push() {
   eval "docker tag ${DOCKER_IMAGE_TAG} ${ECS_REGISTRY}/${DOCKER_IMAGE_TAG}"
   eval "docker push ${ECS_REGISTRY}/${DOCKER_IMAGE_TAG}"
   echo "Tagged and pushed image to ECS registry as $ECS_REGISTRY/$DOCKER_IMAGE_TAG"
-  docker_cleanup
-}
-
-docker_cleanup() {
-  docker images | grep $APP_NAME | awk '{ print $3; }' | xargs docker rmi -f
-  echo "Deleted the Docker image ${DOCKER_IMAGE_TAG} from the GoCd Agent"
 }
 
 ecs_restart() {
