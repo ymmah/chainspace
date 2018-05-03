@@ -1,5 +1,8 @@
 #!/bin/sh
 
+set -e
+set -x
+
 ECS_REGISTRY="987195267860.dkr.ecr.eu-west-1.amazonaws.com"
 APP_NAME="chainspace/app"
 CLUSTER_NAME="chainspace"
@@ -27,7 +30,7 @@ push() {
   eval "docker tag ${DOCKER_IMAGE_TAG} ${ECS_REGISTRY}/${DOCKER_IMAGE_TAG}"
   eval "docker push ${ECS_REGISTRY}/${DOCKER_IMAGE_TAG}"
   echo "Tagged and pushed image to ECS registry as $ECS_REGISTRY/$DOCKER_IMAGE_TAG"
-  # docker_cleanup
+  docker_cleanup
 }
 
 docker_cleanup() {
