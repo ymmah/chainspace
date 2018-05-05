@@ -12,7 +12,7 @@ build-jar:
 
 test:
 	./contrib/deploy/test.sh
-dst:
+dist:
 	./contrib/core-tools/build-node-dist.sh
 
 start-nodes:
