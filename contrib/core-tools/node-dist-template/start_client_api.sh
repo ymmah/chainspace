@@ -8,5 +8,6 @@ CLIENT_API_PORT=5000
 CLIENT_API_DB=../node_0_0/database
 MAIN_CLASS=uk.ac.ucl.cs.sec.chainspace.Client
 CONFIG_FILE=config/client-api/config.txt
+SUBMIT_T_TIMEOUT=20000
 
-java -Dclient.api.database=${CLIENT_API_DB} -Dclient.api.port=${CLIENT_API_PORT} -cp ${BFT_SMART_LIB}:${CHAINSPACE_JAR} ${MAIN_CLASS} ${CONFIG_FILE}
+java -Dmapclient.submitTxTimeout=${SUBMIT_T_TIMEOUT} -Dclient.api.database=${CLIENT_API_DB} -Dclient.api.port=${CLIENT_API_PORT} -cp ${BFT_SMART_LIB}:${CHAINSPACE_JAR} ${MAIN_CLASS} ${CONFIG_FILE}
