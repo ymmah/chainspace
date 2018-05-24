@@ -8,7 +8,7 @@ list-nodes:
 	screen -list
 
 build-jar:
-	cd chainspacecore && mvn -Dversion=1.0-SNAPSHOT package assembly:single
+	cd chainspacecore && mvn -Dversion=1.0-SNAPSHOT -DskipTests=true package assembly:single
 
 test:
 	./contrib/deploy/test.sh
