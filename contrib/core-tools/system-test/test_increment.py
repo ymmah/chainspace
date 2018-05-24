@@ -77,7 +77,7 @@ print "\n\nSUMMARY:\n"
 all_ok = True
 for result in results:
     print "RESULT: " + str(result)
-    if not result[0]:
+    if not (result[0] == 'True'):
         all_ok = False
 
 print "\n\nRESULT OF ALL CONTRACT CALLS: " + str(all_ok) + "\n\n"
