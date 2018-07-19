@@ -38,6 +38,9 @@ ecs_restart() {
   echo $TASK
   echo $CONTAINER
 
+  CONTAINER=$(echo $CONTAINER | cut -d \/ -f2 | cut -d \" -f1)
+  TASK=$(echo $TASK | cut -d \/ -f2 | cut -d \" -f1)
+
   eval "aws ecs  stop-task --cluster chainspace --task ${TASK}"
   sleep 5
 
