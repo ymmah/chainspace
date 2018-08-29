@@ -43,21 +43,27 @@ def post_transaction(method, tx):
 # set up options, participants, and tally's key
 options = ['YES', 'NO']
 
+# Write private key into temp file
+private_filepath = "/tmp/key.json"
+f = open(private_filepath, "w")
+f.write("""
+{"private":"000000000000000000000000000000005ebdd5fd81b8242bebca178bc655d149e802b729d9dcd0af5cc7bbaf2f63b866"}
+""")
+f.close()
+
 
 init_transaction = zenroom_petition.init()
-
 # pp_object(init_transaction)
 
 post_transaction("init", init_transaction)
-
 pp_object(init_transaction)
-#
-# petition_token = init_transaction['transaction']['outputs'][0]
-#
-# print "\nCreate the petition\n"
-# tx_create_petition = petition_contract.create_petition((petition_token,), None, None, json.dumps(options), pack(tally_priv), pack(tally_pub))
-# post_transaction("create_petition", tx_create_petition)
-# petition_root = tx_create_petition['transaction']['outputs'][1]
+
+petition_token = init_transaction['transaction']['outputs'][0]
+
+print "\nCreate the petition\n"
+tx_create_petition = petition_contract.create_petition((petition_token,), None, None, json.dumps(options), private_filepath)
+post_transaction("create_petition", tx_create_petition)
+petition_root = tx_create_petition['transaction']['outputs'][1]
 #
 #
 # print "\nFirst signature\n"

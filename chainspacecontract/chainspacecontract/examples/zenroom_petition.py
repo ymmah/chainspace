@@ -13,13 +13,30 @@
 ####################################################################
 # general
 from hashlib import sha256
-from json    import dumps, loads
+from json    import dumps, loads, dump
+from os.path import join
+
+import subprocess
+
 # chainspace
 from chainspacecontract import ChainspaceContract
 
 ## contract name
 contract = ChainspaceContract('zenroom_petition')
 
+ZENROOM_PATH = "/Users/raulvv/DECODE/zenroom/src/zenroom.command"
+SCRIPT_PATH = "/Users/raulvv/DECODE/zenroom/examples/elgamal"
+
+def execute_zenroom(script_filename, data_filename = None, key_filename = None):
+    commands = [ZENROOM_PATH]
+    if data_filename:
+        commands = commands + ['-a', data_filename]
+
+    if key_filename:
+        commands = commands + ['-k', key_filename]
+
+    commands.append(join(SCRIPT_PATH, script_filename))
+    return subprocess.check_output(commands)
 
 ####################################################################
 # methods
@@ -33,43 +50,32 @@ def init():
     return {
         'outputs': (dumps({'type' : 'PetitionEncToken'}),)
     }
-#
-# # ------------------------------------------------------------------
-# # create petition event
-# # NOTE:
-# #   - only 'inputs', 'reference_inputs' and 'parameters' are used to the framework
-# #   - if there are more than 3 param, the checker has to be implemented by hand
-# # ------------------------------------------------------------------
-# @contract.method('create_petition')
-# def create_petition(inputs, reference_inputs, parameters, options, tally_priv, tally_pub):
-#
-#     # genrate param
-#     params = setup()
-#     pub = unpack(tally_pub)
-#
-#     # encrypt initial score
-#     (a, b, k) = binencrypt(params, pub, 0)   # encryption of a zero
-#     c = (a, b)
-#     scores = [pack(c) for _ in loads(options)]
-#
-#     # new petition object
-#     new_petition = {
-#         'type'          : 'PetitionEncObject',
-#         'options'       : loads(options),
-#         'scores'        : scores,
-#         'tally_pub'     : tally_pub
-#     }
-#
-#     # proof that all init values are zero
-#     proof_init = provezero(params, pub, c, unpack(tally_priv))
-#
-#     # return
-#     return {
-#         'outputs': (inputs[0], dumps(new_petition)),
-#         'extra_parameters' :
-#             (pack(proof_init),)
-#     }
-#
+
+# ------------------------------------------------------------------
+# create petition event
+# NOTE:
+#   - only 'inputs', 'reference_inputs' and 'parameters' are used to the framework
+#   - if there are more than 3 param, the checker has to be implemented by hand
+# ------------------------------------------------------------------
+@contract.method('create_petition')
+def create_petition(inputs, reference_inputs, parameters, options, private_filepath):
+
+    output = loads(execute_zenroom('init.lua', None, private_filepath))
+
+    # new petition object
+    new_petition = {
+        'type'          : 'PetitionEncObject',
+        'options'       : output["options"],
+        'scores'        : output["scores"],
+        'tally_pub'     : output["public"],
+        'proves'        : output["proves"]
+    }
+
+    # return
+    return {
+        'outputs': (inputs[0], dumps(new_petition))
+    }
+
 # # ------------------------------------------------------------------
 # # add signature
 # # NOTE:
@@ -203,40 +209,25 @@ def init():
 # # ------------------------------------------------------------------
 # # check petitions's creation
 # # ------------------------------------------------------------------
-# @contract.checker('create_petition')
-# def create_petition_checker(inputs, reference_inputs, parameters, outputs, returns, dependencies):
-#     try:
-#
-#         # retrieve petition
-#         petition  = loads(outputs[1])
-#         num_options = len(petition['options'])
-#
-#         print "CHECKING (create) - check format"
-#         if len(inputs) != 1 or len(reference_inputs) != 0 or len(outputs) != 2 or len(returns) != 0:
-#             return False
-#         if num_options < 1 or num_options != len(petition['scores']):
-#             return False
-#
-#         print "CHECKING (create) - check tokens"
-#         if loads(inputs[0])['type'] != 'PetitionEncToken' or loads(outputs[0])['type'] != 'PetitionEncToken':
-#             return False
-#         if petition['type'] != 'PetitionEncObject':
-#             return False
-#
-#         print "CHECKING (create) - check proof"
-#         params = setup()
-#         proof_init = unpack(parameters[0])
-#         tally_pub  = unpack(petition['tally_pub'])
-#         for value in petition['scores']:
-#             if not verifyzero(params, tally_pub, unpack(value), proof_init):
-#                 return False
-#
-#         # otherwise
-#         return True
-#
-#     except (KeyError, Exception):
-#         return False
-#
+@contract.checker('create_petition')
+def create_petition_checker(inputs, reference_inputs, parameters, outputs, returns, dependencies):
+    try:
+        # retrieve petition
+        petition  = loads(outputs[1])
+        petition["public"] = petition["tally_pub"]
+
+        data_filepath = "/tmp/data.json"
+        f = open(data_filepath, "w")
+        f.write(dumps(petition))
+        f.close()
+
+        output = loads(execute_zenroom('verify_init.lua', data_filepath))
+
+        return output["ok"] == True
+
+    except (KeyError, Exception):
+        return False
+
 # # ------------------------------------------------------------------
 # # check add signature
 # # ------------------------------------------------------------------
