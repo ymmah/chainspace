@@ -24,11 +24,8 @@ from chainspacecontract import ChainspaceContract
 ## contract name
 contract = ChainspaceContract('zenroom_petition')
 
-#ZENROOM_PATH = "/Users/raulvv/DECODE/zenroom/src/zenroom.command"
-#SCRIPT_PATH = "/Users/raulvv/DECODE/zenroom/examples/elgamal"
-
 ZENROOM_PATH = "zenroom"
-SCRIPT_PATH = "/home/kozko/tmp/zenroom/examples/elgamal"
+SCRIPT_PATH = "/opt/contracts/"
 
 
 def execute_zenroom(script_filename, data_filename = None, key_filename = None):

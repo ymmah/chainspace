@@ -1,3 +1,23 @@
+FROM alpine:3.6
+
+ARG zenroom_tag=v0.7.1
+
+WORKDIR /code/zenroom
+
+RUN apk update
+RUN apk upgrade
+RUN apk add --no-cache git openssh git
+
+RUN git clone \
+    --single-branch --branch ${zenroom_tag} \
+    https://github.com/DECODEproject/zenroom.git \
+    . \
+ && git submodule init \
+ && git submodule update
+
+RUN apk add --no-cache make cmake gcc musl-dev musl musl-utils
+RUN make musl-system
+
 FROM ubuntu:16.04
 
 RUN apt-get update && \
@@ -13,6 +33,9 @@ COPY chainspacecontract /app/chainspacecontract
 COPY chainspacecore /app/chainspacecore
 COPY contrib /app/contrib
 COPY Makefile /app/
+
+COPY --from=0 /code/zenroom/src/zenroom-static /usr/bin/zenroom
+COPY --from=0 /code/zenroom/examples/elgamal  /opt/contracts/
 
 RUN easy_install pip
 WORKDIR /app
