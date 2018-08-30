@@ -134,8 +134,6 @@ def tally(inputs, reference_inputs, parameters, key_filename):
 
     outcome = output['outcome']
     proof = output['proof']
-    scores = petition['scores']
-    public = petition['public']
 
     # pack result
     result = {
@@ -147,9 +145,7 @@ def tally(inputs, reference_inputs, parameters, key_filename):
     return {
         'outputs': (dumps(result),),
         'extra_parameters' : (dumps({
-            'proof': proof,
-            'scores': scores,
-            'public': public
+            'proof': proof
         }),)
     }
 #
@@ -258,12 +254,10 @@ def tally_checker(inputs, reference_inputs, parameters, outputs, returns, depend
         if result['type'] != 'PetitionEncResult':
             return False
 
-        print("HEEEEEEEEEEEEEEEEEERE!!!")
-
         data = loads(parameters[0])
         result['proof'] = data['proof']
-        result['scores'] = data['scores']
-        result['public'] = data['public']
+        result['scores'] = petition['scores']
+        result['public'] = petition['public']
 
         write_data(result)
 
