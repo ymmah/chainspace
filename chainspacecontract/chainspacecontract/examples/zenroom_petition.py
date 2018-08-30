@@ -118,57 +118,43 @@ def add_signature(inputs, reference_inputs, parameters, added_signature):
             dumps(proof_sum)
         )
     }
-#
-# # ------------------------------------------------------------------
-# # tally
-# # NOTE:
-# #   - only 'inputs', 'reference_inputs' and 'parameters' are used to the framework
-# #   - if there are more than 3 param, the checker has to be implemented by hand
-# # ------------------------------------------------------------------
-# @contract.method('tally')
-# def tally(inputs, reference_inputs, parameters, tally_priv, tally_pub):
-#
-#     # retrieve last petition
-#     petition = loads(inputs[0])
-#
-#     # generate params & retrieve tally's public key
-#     params = setup()
-#     table  = make_table(params)
-#     (G, _, (h0, _, _, _), _) = params
-#
-#     # decrypt aggregated results
-#     outcome = []
-#     for item in petition['scores']:
-#         outcome.append(dec(params, table, unpack(tally_priv), unpack(item)))
-#
-#     # proof of decryption
-#     proof_dec = []
-#     for i in range(0, len(petition['scores'])):
-#         a, b = unpack(petition['scores'][i])
-#         ciphertext = (a, b - outcome[i] * h0)
-#         tmp = provezero(params, unpack(tally_pub), ciphertext, unpack(tally_priv))
-#         proof_dec.append(pack(tmp))
-#
-#     # signature
-#     hasher = sha256()
-#     hasher.update(dumps(petition).encode('utf8'))
-#     hasher.update(dumps(outcome).encode('utf8'))
-#     sig = do_ecdsa_sign(G, unpack(tally_priv), hasher.digest())
-#
-#     # pack result
-#     result = {
-#         'type'      : 'PetitionEncResult',
-#         'outcome'   : outcome
-#     }
-#
-#     # return
-#     return {
-#         'outputs': (dumps(result),),
-#         'extra_parameters' : (
-#             dumps(proof_dec),
-#             pack(sig)
-#         )
-#     }
+
+# ------------------------------------------------------------------
+# tally
+# NOTE:
+#   - only 'inputs', 'reference_inputs' and 'parameters' are used to the framework
+#   - if there are more than 3 param, the checker has to be implemented by hand
+# ------------------------------------------------------------------
+@contract.method('tally')
+def tally(inputs, reference_inputs, parameters, key_filename):
+
+    # retrieve last petition
+    petition = loads(inputs[0])
+
+    write_data(petition)
+
+    output = loads(execute_zenroom('tally.lua', '/tmp/data.json', key_filename))
+
+    outcome = output['outcome']
+    proof = output['proof']
+    scores = petition['scores']
+    public = petition['public']
+
+    # pack result
+    result = {
+        'type'      : 'PetitionEncResult',
+        'outcome'   : outcome
+    }
+
+    # return
+    return {
+        'outputs': (dumps(result),),
+        'extra_parameters' : (dumps({
+            'proof': proof,
+            'scores': scores,
+            'public': public
+        }),)
+    }
 #
 # # ------------------------------------------------------------------
 # # read
@@ -197,7 +183,7 @@ def create_petition_checker(inputs, reference_inputs, parameters, outputs, retur
 
         write_data(petition)
 
-        output = loads(execute_zenroom('verify_init.lua', data_filepath))
+        output = loads(execute_zenroom('verify_init.lua', '/tmp/data.json'))
 
         return output["ok"] == True
 
@@ -253,55 +239,44 @@ def add_signature_checker(inputs, reference_inputs, parameters, outputs, returns
 
     except (KeyError, Exception):
         return False
-#
-# # ------------------------------------------------------------------
-# # check tally
-# # ------------------------------------------------------------------
-# @contract.checker('tally')
-# def tally_checker(inputs, reference_inputs, parameters, outputs, returns, dependencies):
-#     try:
-#
-#         # retrieve petition
-#         petition   = loads(inputs[0])
-#         result = loads(outputs[0])
-#
-#         # check format
-#         if len(inputs) != 1 or len(reference_inputs) != 0 or len(outputs) != 1 or len(returns) != 0:
-#             return False
-#         if len(petition['options']) != len(result['outcome']):
-#             return False
-#
-#         # check tokens
-#         if result['type'] != 'PetitionEncResult':
-#             return False
-#
-#         # generate params, retrieve tally's public key and the parameters
-#         params = setup()
-#         (G, _, (h0, _, _, _), _) = params
-#         tally_pub  = unpack(petition['tally_pub'])
-#         proof_dec  = loads(parameters[0])
-#         sig        = unpack(parameters[1])
-#         outcome    = result['outcome']
-#
-#         # verify proof of correct decryption
-#         for i in range(0, len(petition['scores'])):
-#             a, b = unpack(petition['scores'][i])
-#             ciphertext = (a, b - outcome[i] * h0)
-#             if not verifyzero(params, tally_pub, ciphertext, unpack(proof_dec[i])):
-#                 return False
-#
-#         # verify signature
-#         hasher = sha256()
-#         hasher.update(dumps(petition).encode('utf8'))
-#         hasher.update(dumps(result['outcome']).encode('utf8'))
-#         if not do_ecdsa_verify(G, tally_pub, sig, hasher.digest()):
-#             return False
-#
-#         # otherwise
-#         return True
-#
-#     except (KeyError, Exception):
-#         return False
+
+# ------------------------------------------------------------------
+# check tally
+# ------------------------------------------------------------------
+@contract.checker('tally')
+def tally_checker(inputs, reference_inputs, parameters, outputs, returns, dependencies):
+    try:
+
+        # retrieve petition
+        petition   = loads(inputs[0])
+        result = loads(outputs[0])
+
+        # check format
+        if len(inputs) != 1 or len(reference_inputs) != 0 or len(outputs) != 1 or len(returns) != 0:
+            return False
+        if len(petition['options']) != len(result['outcome']):
+            return False
+
+        # check tokens
+        if result['type'] != 'PetitionEncResult':
+            return False
+
+        print("HEEEEEEEEEEEEEEEEEERE!!!")
+
+        data = loads(parameters[0])
+        result['proof'] = data['proof']
+        result['scores'] = data['scores']
+        result['public'] = data['public']
+
+        write_data(result)
+
+        output = loads(execute_zenroom('verify_tally.lua', '/tmp/data.json'))
+
+        # otherwise
+        return output['ok'] == True
+
+    except (KeyError, Exception):
+        return False
 #
 # # ------------------------------------------------------------------
 # # check read

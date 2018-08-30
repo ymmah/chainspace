@@ -71,33 +71,33 @@ tx_add_signature_1 = petition_contract.add_signature((petition_root,), None, Non
 post_transaction("add_signature", tx_add_signature_1)
 signature_1 = tx_add_signature_1['transaction']['outputs'][0]
 
-# print "\nSecond signature\n"
-# tx_add_signature_2 = petition_contract.add_signature((signature_1,), None, None, json.dumps([0, 1]))
-# post_transaction("add_signature", tx_add_signature_2)
-# signature_2 = tx_add_signature_2['transaction']['outputs'][0]
-#
-# print "\nThird signature\n"
-# tx_add_signature_3 = petition_contract.add_signature((signature_2,), None, None, json.dumps([1, 0]))
-# post_transaction("add_signature", tx_add_signature_3)
-# signature_3 = tx_add_signature_3['transaction']['outputs'][0]
-#
-#
-# # Tally the results
-# tx_tally = petition_contract.tally((signature_3,), None, None, pack(tally_priv), pack(tally_pub))
-#
-# post_transaction("tally", tx_tally)
-#
-# pp_object(tx_tally)
-#
-# checker_service_process.terminate()
-# checker_service_process.join()
-#
-#
-# print "\n\nSUMMARY:\n"
-# all_ok = True
-# for result in results:
-#     print "RESULT: " + str(result)
-#     if not result[0]:
-#         all_ok = False
-#
-# print "\n\nRESULT OF ALL CONTRACT CALLS: " + str(all_ok) + "\n\n"
+print "\nSecond signature\n"
+tx_add_signature_2 = petition_contract.add_signature((signature_1,), None, None, json.dumps([0, 1]))
+post_transaction("add_signature", tx_add_signature_2)
+signature_2 = tx_add_signature_2['transaction']['outputs'][0]
+
+print "\nThird signature\n"
+tx_add_signature_3 = petition_contract.add_signature((signature_2,), None, None, json.dumps([1, 0]))
+post_transaction("add_signature", tx_add_signature_3)
+signature_3 = tx_add_signature_3['transaction']['outputs'][0]
+
+
+# Tally the results
+tx_tally = petition_contract.tally((signature_3,), None, None, private_filepath)
+
+post_transaction("tally", tx_tally)
+
+pp_object(tx_tally)
+
+checker_service_process.terminate()
+checker_service_process.join()
+
+
+print "\n\nSUMMARY:\n"
+all_ok = True
+for result in results:
+    print "RESULT: " + str(result)
+    if not result[0]:
+        all_ok = False
+
+print "\n\nRESULT OF ALL CONTRACT CALLS: " + str(all_ok) + "\n\n"
