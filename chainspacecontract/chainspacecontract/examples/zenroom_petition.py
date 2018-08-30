@@ -24,8 +24,12 @@ from chainspacecontract import ChainspaceContract
 ## contract name
 contract = ChainspaceContract('zenroom_petition')
 
-ZENROOM_PATH = "/Users/raulvv/DECODE/zenroom/src/zenroom.command"
-SCRIPT_PATH = "/Users/raulvv/DECODE/zenroom/examples/elgamal"
+#ZENROOM_PATH = "/Users/raulvv/DECODE/zenroom/src/zenroom.command"
+#SCRIPT_PATH = "/Users/raulvv/DECODE/zenroom/examples/elgamal"
+
+ZENROOM_PATH = "zenroom"
+SCRIPT_PATH = "/home/kozko/tmp/zenroom/examples/elgamal"
+
 
 def execute_zenroom(script_filename, data_filename = None, key_filename = None):
     commands = [ZENROOM_PATH]
@@ -37,6 +41,11 @@ def execute_zenroom(script_filename, data_filename = None, key_filename = None):
 
     commands.append(join(SCRIPT_PATH, script_filename))
     return subprocess.check_output(commands)
+
+
+def write_data(data, filename="/tmp/data.json"):
+    with open(filename, 'w') as outfile:
+        dump(data, outfile)
 
 ####################################################################
 # methods
@@ -67,7 +76,7 @@ def create_petition(inputs, reference_inputs, parameters, options, private_filep
         'type'          : 'PetitionEncObject',
         'options'       : output["options"],
         'scores'        : output["scores"],
-        'tally_pub'     : output["public"],
+        'public'        : output["public"],
         'proves'        : output["proves"]
     }
 
@@ -76,68 +85,39 @@ def create_petition(inputs, reference_inputs, parameters, options, private_filep
         'outputs': (inputs[0], dumps(new_petition))
     }
 
-# # ------------------------------------------------------------------
-# # add signature
-# # NOTE:
-# #   - only 'inputs', 'reference_inputs' and 'parameters' are used to the framework
-# #   - if there are more than 3 param, the checker has to be implemented by hand
-# # ------------------------------------------------------------------
-# @contract.method('add_signature')
-# def add_signature(inputs, reference_inputs, parameters, added_signature):
-#
-#     old_signature = loads(inputs[0])
-#     new_signature = loads(inputs[0])
-#     added_signature = loads(added_signature)
-#
-#     params = setup()
-#     tally_pub = unpack(old_signature['tally_pub'])
-#
-#     # encrypt signatures & proofs to build
-#     enc_added_signatures = []  # encrypted signatures
-#     proof_bin       = []  # signatures are binary, well-formed, and the prover know the signature's value
-#     sum_a, sum_b, sum_k = (0, 0, 0)  # sum of signatures equals 1
-#
-#     # loop over signatures
-#     for i in range(0, len(added_signature)):
-#         # encrypt added signature
-#         (a, b, k) = binencrypt(params, tally_pub, added_signature[i])
-#         c = (a, b)
-#         enc_added_signatures.append(pack(c))
-#
-#         # update new scores
-#         new_c = add(unpack(old_signature['scores'][i]), c)
-#         new_signature['scores'][i] = pack(new_c)
-#
-#         # construct proof of binary
-#         tmp1 = provebin(params, tally_pub, (a,b), k, added_signature[i])
-#         proof_bin.append(pack(tmp1))
-#
-#         # update sum of signature
-#         if i == 0:
-#             sum_a, sum_b, sum_k = (a, b, k)
-#         else:
-#             sum_c = (sum_a, sum_b)
-#             sum_a, sum_b, sum_k = add_side(sum_c, c, sum_k, k)
-#
-#     # build proof that sum of signatures equals 1
-#     sum_c = (sum_a, sum_b)
-#     proof_sum = proveone(params, tally_pub, sum_c, sum_k)
-#
-#     # compute signature
-#     (G, _, _, _) = params
-#     hasher = sha256()
-#     hasher.update(dumps(old_signature).encode('utf8'))
-#     hasher.update(dumps(enc_added_signatures).encode('utf8'))
-#
-#     # return
-#     return {
-#         'outputs': (dumps(new_signature),),
-#         'extra_parameters' : (
-#             dumps(enc_added_signatures),
-#             dumps(proof_bin),
-#             pack(proof_sum)
-#         )
-#     }
+# ------------------------------------------------------------------
+# add signature
+# NOTE:
+#   - only 'inputs', 'reference_inputs' and 'parameters' are used to the framework
+#   - if there are more than 3 param, the checker has to be implemented by hand
+# ------------------------------------------------------------------
+@contract.method('add_signature')
+def add_signature(inputs, reference_inputs, parameters, added_signature):
+
+    last_signature = loads(inputs[0])
+
+    ## TODO: use the added_signatures, to vote on the correct option
+    output = loads(execute_zenroom("vote.lua", "/tmp/data.json"))
+
+    new_signature = {
+        "public"   : output["public"],
+        "options"  : output["options"],
+        "scores"   : output["scores"],
+        'type'     : 'PetitionEncObject',
+    }
+
+    enc_added_signatures = output['increment']
+    proof_bin = output['provebin']
+    proof_sum = output['prove_sum_one']
+
+    return {
+        'outputs': (dumps(new_signature),),
+        'extra_parameters' : (
+            dumps(enc_added_signatures),
+            dumps(proof_bin),
+            dumps(proof_sum)
+        )
+    }
 #
 # # ------------------------------------------------------------------
 # # tally
@@ -214,12 +194,8 @@ def create_petition_checker(inputs, reference_inputs, parameters, outputs, retur
     try:
         # retrieve petition
         petition  = loads(outputs[1])
-        petition["public"] = petition["tally_pub"]
 
-        data_filepath = "/tmp/data.json"
-        f = open(data_filepath, "w")
-        f.write(dumps(petition))
-        f.close()
+        write_data(petition)
 
         output = loads(execute_zenroom('verify_init.lua', data_filepath))
 
@@ -228,65 +204,55 @@ def create_petition_checker(inputs, reference_inputs, parameters, outputs, retur
     except (KeyError, Exception):
         return False
 
-# # ------------------------------------------------------------------
-# # check add signature
-# # ------------------------------------------------------------------
-# @contract.checker('add_signature')
-# def add_signature_checker(inputs, reference_inputs, parameters, outputs, returns, dependencies):
-#     try:
-#
-#         print "CHECKING - parameters " + str(parameters)
-#
-#         # retrieve petition
-#         old_signature = loads(inputs[0])
-#         new_signature = loads(outputs[0])
-#         num_options = len(old_signature['options'])
-#
-#         # check format
-#         if len(inputs) != 1 or len(reference_inputs) != 0 or len(outputs) != 1 or len(returns) != 0:
-#             return False
-#         if num_options != len(new_signature['scores']) or num_options != len(new_signature['scores']):
-#             return False
-#         if old_signature['tally_pub'] != new_signature['tally_pub']:
-#             return False
-#
-#         print "CHECKING - tokens"
-#         if new_signature['type'] != 'PetitionEncObject':
-#             return False
-#
-#
-#         print "CHECKING - Generate params"
-#         # generate params, retrieve tally's public key and the parameters
-#         params = setup()
-#         tally_pub  = unpack(old_signature['tally_pub'])
-#         added_signature = loads(parameters[0])
-#         proof_bin  = loads(parameters[1])
-#         proof_sum  = unpack(parameters[2])
-#
-#         print "CHECKING - verify proofs of binary (Signatures have to be bin values)"
-#         for i in range(0, num_options):
-#             if not verifybin(params, tally_pub, unpack(added_signature[i]), unpack(proof_bin[i])):
-#                 return False
-#
-#         print "CHECKING - verify proof of sum of signatures (sum of signatures has to be 1)"
-#         sum_a, sum_b = unpack(added_signature[-1])
-#         sum_c = (sum_a, sum_b)
-#         for i in range(0, num_options-1):
-#             sum_c = add(sum_c, unpack(added_signature[i]))
-#         if not verifyone(params, tally_pub, sum_c, proof_sum):
-#             return False
-#
-#         print "CHECKING - verify that output == input + signature"
-#         for i in range(0, num_options):
-#             tmp_c = add(unpack(old_signature['scores'][i]), unpack(added_signature[i]))
-#             if not new_signature['scores'][i] == pack(tmp_c):
-#                 return False
-#
-#         # otherwise
-#         return True
-#
-#     except (KeyError, Exception):
-#         return False
+# ------------------------------------------------------------------
+# check add signature
+# ------------------------------------------------------------------
+@contract.checker('add_signature')
+def add_signature_checker(inputs, reference_inputs, parameters, outputs, returns, dependencies):
+    try:
+
+        print "CHECKING - parameters " + str(parameters)
+
+        # retrieve petition
+        old_signature = loads(inputs[0])
+        new_signature = loads(outputs[0])
+        num_options = len(old_signature['options'])
+
+        # check format
+        if len(inputs) != 1 or len(reference_inputs) != 0 or len(outputs) != 1 or len(returns) != 0:
+            return False
+        if num_options != len(new_signature['scores']) or num_options != len(new_signature['scores']):
+            return False
+        if old_signature['public'] != new_signature['public']:
+            return False
+
+        print "CHECKING - tokens"
+        if new_signature['type'] != 'PetitionEncObject':
+            return False
+
+
+        print "CHECKING - Generate params"
+
+
+        # generate params, retrieve tally's public key and the parameters
+        added_signature = loads(parameters[0])
+        proof_bin  = loads(parameters[1])
+        proof_sum  = loads(parameters[2])
+
+        data = new_signature
+        data['prove_sum_one'] = proof_sum
+        data['provebin'] = proof_bin
+        data['increment'] = added_signature
+
+        write_data(data)
+
+        output = loads(execute_zenroom('verify_vote.lua', '/tmp/data.json'))
+
+        # otherwise
+        return output["ok"]
+
+    except (KeyError, Exception):
+        return False
 #
 # # ------------------------------------------------------------------
 # # check tally

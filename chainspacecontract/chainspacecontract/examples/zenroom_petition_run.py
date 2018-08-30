@@ -64,13 +64,13 @@ print "\nCreate the petition\n"
 tx_create_petition = petition_contract.create_petition((petition_token,), None, None, json.dumps(options), private_filepath)
 post_transaction("create_petition", tx_create_petition)
 petition_root = tx_create_petition['transaction']['outputs'][1]
-#
-#
-# print "\nFirst signature\n"
-# tx_add_signature_1 = petition_contract.add_signature((petition_root,), None, None, json.dumps([1, 0]))
-# post_transaction("add_signature", tx_add_signature_1)
-# signature_1 = tx_add_signature_1['transaction']['outputs'][0]
-#
+
+
+print "\nFirst signature\n"
+tx_add_signature_1 = petition_contract.add_signature((petition_root,), None, None, json.dumps([1, 0]))
+post_transaction("add_signature", tx_add_signature_1)
+signature_1 = tx_add_signature_1['transaction']['outputs'][0]
+
 # print "\nSecond signature\n"
 # tx_add_signature_2 = petition_contract.add_signature((signature_1,), None, None, json.dumps([0, 1]))
 # post_transaction("add_signature", tx_add_signature_2)
