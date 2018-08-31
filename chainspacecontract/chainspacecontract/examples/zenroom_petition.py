@@ -26,6 +26,7 @@ contract = ChainspaceContract('zenroom_petition')
 
 ZENROOM_PATH = "zenroom"
 SCRIPT_PATH = "/opt/contracts/"
+DATA_PATH = "/tmp/data.json"
 
 
 def execute_zenroom(script_filename, data_filename = None, key_filename = None):
@@ -40,7 +41,7 @@ def execute_zenroom(script_filename, data_filename = None, key_filename = None):
     return subprocess.check_output(commands)
 
 
-def write_data(data, filename="/tmp/data.json"):
+def write_data(data, filename=DATA_PATH):
     with open(filename, 'w') as outfile:
         dump(data, outfile)
 
@@ -72,7 +73,7 @@ def create_petition(inputs, reference_inputs, parameters, options, private_filep
 
     write_data(data)
 
-    output = loads(execute_zenroom('init.lua', '/tmp/data.json', private_filepath))
+    output = loads(execute_zenroom('init.lua', DATA_PATH, private_filepath))
 
     # new petition object
     new_petition = {
@@ -102,7 +103,7 @@ def add_signature(inputs, reference_inputs, parameters, option):
 
     write_data(last_signature)
 
-    output = loads(execute_zenroom("vote.lua", "/tmp/data.json"))
+    output = loads(execute_zenroom("vote.lua", DATA_PATH))
 
     new_signature = {
         "public"   : output["public"],
@@ -138,7 +139,7 @@ def tally(inputs, reference_inputs, parameters, key_filename):
 
     write_data(petition)
 
-    output = loads(execute_zenroom('tally.lua', '/tmp/data.json', key_filename))
+    output = loads(execute_zenroom('tally.lua', DATA_PATH, key_filename))
 
     outcome = output['outcome']
     proof = output['proof']
@@ -156,19 +157,7 @@ def tally(inputs, reference_inputs, parameters, key_filename):
             'proof': proof
         }),)
     }
-#
-# # ------------------------------------------------------------------
-# # read
-# # ------------------------------------------------------------------
-# @contract.method('read')
-# def read(inputs, reference_inputs, parameters):
-#
-#     # return
-#     return {
-#         'returns' : (reference_inputs[0],),
-#     }
-#
-#
+
 #
 # ####################################################################
 # # checkers
@@ -184,9 +173,9 @@ def create_petition_checker(inputs, reference_inputs, parameters, outputs, retur
 
         write_data(petition)
 
-        output = loads(execute_zenroom('verify_init.lua', '/tmp/data.json'))
+        output = loads(execute_zenroom('verify_init.lua', DATA_PATH))
 
-        return output["ok"] == True
+        return output["ok"]
 
     except (KeyError, Exception):
         return False
@@ -208,7 +197,7 @@ def add_signature_checker(inputs, reference_inputs, parameters, outputs, returns
         # check format
         if len(inputs) != 1 or len(reference_inputs) != 0 or len(outputs) != 1 or len(returns) != 0:
             return False
-        if num_options != len(new_signature['scores']) or num_options != len(new_signature['scores']):
+        if num_options != len(new_signature['scores']):
             return False
         if old_signature['public'] != new_signature['public']:
             return False
@@ -233,7 +222,7 @@ def add_signature_checker(inputs, reference_inputs, parameters, outputs, returns
 
         write_data(data)
 
-        output = loads(execute_zenroom('verify_vote.lua', '/tmp/data.json'))
+        output = loads(execute_zenroom('verify_vote.lua', DATA_PATH))
 
         # otherwise
         return output["ok"]
@@ -269,35 +258,14 @@ def tally_checker(inputs, reference_inputs, parameters, outputs, returns, depend
 
         write_data(result)
 
-        output = loads(execute_zenroom('verify_tally.lua', '/tmp/data.json'))
+        output = loads(execute_zenroom('verify_tally.lua', DATA_PATH))
 
         # otherwise
-        return output['ok'] == True
+        return output['ok']
 
     except (KeyError, Exception):
         return False
-#
-# # ------------------------------------------------------------------
-# # check read
-# # ------------------------------------------------------------------
-# @contract.checker('read')
-# def read_checker(inputs, reference_inputs, parameters, outputs, returns, dependencies):
-#     try:
-#
-#         # check format
-#         if len(inputs) != 0 or len(reference_inputs) != 1 or len(outputs) != 0 or len(returns) != 1:
-#             return False
-#
-#         # check values
-#         if reference_inputs[0] != returns[0]:
-#             return False
-#
-#         # otherwise
-#         return True
-#
-#     except (KeyError, Exception):
-#         return False
-#
+
 
 ####################################################################
 # main

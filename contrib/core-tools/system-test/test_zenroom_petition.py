@@ -8,7 +8,6 @@ import pprint
 # chainspace
 
 from chainspaceapi import ChainspaceClient
-from chainspacecontract import transaction_to_solution
 
 from chainspacecontract.examples.zenroom_petition import contract as petition_contract
 from chainspacecontract.examples import zenroom_petition
