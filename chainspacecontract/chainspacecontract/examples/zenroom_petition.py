@@ -66,7 +66,13 @@ def init():
 @contract.method('create_petition')
 def create_petition(inputs, reference_inputs, parameters, options, private_filepath):
 
-    output = loads(execute_zenroom('init.lua', None, private_filepath))
+    data = {
+        'options': options
+    }
+
+    write_data(data)
+
+    output = loads(execute_zenroom('init.lua', '/tmp/data.json', private_filepath))
 
     # new petition object
     new_petition = {
@@ -89,11 +95,13 @@ def create_petition(inputs, reference_inputs, parameters, options, private_filep
 #   - if there are more than 3 param, the checker has to be implemented by hand
 # ------------------------------------------------------------------
 @contract.method('add_signature')
-def add_signature(inputs, reference_inputs, parameters, added_signature):
+def add_signature(inputs, reference_inputs, parameters, option):
 
     last_signature = loads(inputs[0])
+    last_signature['option'] = option
 
-    ## TODO: use the added_signatures, to vote on the correct option
+    write_data(last_signature)
+
     output = loads(execute_zenroom("vote.lua", "/tmp/data.json"))
 
     new_signature = {

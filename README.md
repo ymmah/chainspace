@@ -39,6 +39,43 @@ If you need to kill everything:
 ps aux | grep -v grep | grep chainspace | awk '{print $2}' | xargs kill
 ```
 
+### With zenroom
+
+If you are going to use contracts that use zenroom you should install it on your computer, here is a small tutorial to install it.
+
+```
+git clone git@github.com:DECODEproject/zenroom.git
+cd zenroom
+
+## Download the dependencies
+git submodule init
+git submodule update
+
+## you should have cmake installed
+make osx
+
+sudo cp src/zenroom.command /usr/local/bin/zenroom
+```
+
+Also, by convention all zenroom contracts are stored into /opt/contracts, at the moment only the elgamal contract is need, so doing the next steps is enough.
+
+```
+sudo mkdir /opt/contracts
+
+sudo cp -r examples/elgamal/ /opt/contracts/
+```
+
+You can try that everything is working by starting chainspace and execute the zenroom system tests:
+
+```
+source .chainspace.env/bin/activate
+
+cd contrib/core-tools/system-test;
+python test_zenroom_petition.py
+```
+
+
+
 ## Developer Setup [IntelliJ Ultimate]
 
 There are intellij modules in this folder for each of the submodules. Create a new empty project in intellij. A dialog will prompt you for the project structure, ignore this and wait for the project to load. You will see the .iml module files in the explorer and you can right click and import them to the project from there.
@@ -58,7 +95,3 @@ You will need to add petlib manually to your python virtualenv from a shell... I
 source $PATH_TO_VIRTUAL_ENV$/bin/activate
 pip install petlib
 ```
-
-
-
-
