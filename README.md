@@ -39,6 +39,18 @@ If you need to kill everything:
 ps aux | grep -v grep | grep chainspace | awk '{print $2}' | xargs kill
 ```
 
+### Building with Docker 
+
+First, build the container from the Dockerfile
+```
+docker build -t chainspace . 
+```
+
+Then run chainspace with the following command
+```
+docker run -ti -p 5000:5000 --name chainspace chainspace
+```
+
 ### With zenroom
 
 If you are going to use contracts that use zenroom you should install it on your computer, here is a small tutorial to install it.
