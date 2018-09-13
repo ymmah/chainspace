@@ -36,7 +36,7 @@ make_node() {
 	mkdir -p $path
 	cp -r $NODETEMPL/* $path/
 	sed -e "s/REPLICA_ID/$num/g" -i $path/config/node/config.txt
-	sed -e "s/__START_PORT__/13010/g" -i $path/start_node.sh
+	sed -e "s/__START_PORT__/13${num}10/g" -i $path/start_node.sh
 	chmod +x $path/start_node.sh
 }
 
