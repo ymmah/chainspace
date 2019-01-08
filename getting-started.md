@@ -48,7 +48,7 @@ There is a `Makefile` which has these commands in it:
 
 You need to have Python 2.7 (as well as pip) installed to run Chainspace.
 
-It's preferable to install python virtualenv to manage local python environments and their dependencies.
+It's preferable to install python virtualenv (`pip install virtualenv`)to manage local python environments and their dependencies.
 
 ```
 virtualenv .chainspace.env
@@ -66,19 +66,13 @@ Install Python modules:
 
 
 
-In some instances might need to install bplib and numpy
-
-To run the coconut petition, you will need to install the bilinear pairing library which can be got from
-https://github.com/asonnino/coconut/tree/master/bplib-master
+To run the coconut petitions you will need to install [coconut](https://github.com/asonnino/coconut/), [bplib](https://github.com/gdanezis/bplib) and numpy.
 
 ```
-> pip install -e <place-you-cloned-coconue>/bplib-master
-```
-
-and you need numpy
-
-```
+> brew install openssl
 > pip install numpy
+> pip install bplib
+> pip install coconut-lib
 ```
 
 Assemble an application bundle:
