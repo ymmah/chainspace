@@ -5,7 +5,7 @@
 
 Chainspace is a distributed ledger platform for high-integrity and transparent processing of transactions within a decentralized system.
 
-More detailed documentation can be found in the `docs` folder of this repo.
+More detailed documentation can be found in the `docs` folder of this repo. 
 
 ## Developer Installation
 
@@ -68,7 +68,7 @@ cd zenroom
 git submodule init
 git submodule update
 
-## you should have cmake installed
+## you should have cmake installed (`brew install cmake`)
 make osx
 
 sudo cp src/zenroom.command /usr/local/bin/zenroom
@@ -87,7 +87,7 @@ You can try that everything is working by starting chainspace and execute the ze
 ```
 source .chainspace.env/bin/activate
 
-cd contrib/core-tools/system-test;
+cd contrib/core-tools/system-test
 python test_zenroom_petition.py
 ```
 

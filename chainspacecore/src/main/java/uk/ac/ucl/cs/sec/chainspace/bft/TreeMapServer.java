@@ -86,13 +86,15 @@ public class TreeMapServer extends DefaultRecoverable implements RequestVerifier
         logMsg(strLabel, "TreeMapServer<init> ", "Starting ServiceReplica for shard " + thisShard + ", replica " + thisReplica + " with config from [" + configHome.getAbsolutePath() + "]");
         new ServiceReplica(thisReplica, configHome.getAbsolutePath(), this, this, null, new DefaultReplier()); // Create the server
         logMsg(strLabel, "TreeMapServer<init> ", "ServiceReplica started");
-        try {
-            Thread.sleep(5000);
-        }
-        catch(Exception e) {
-            System.out.println("Error initializing the server. Now exiting.");
-            System.exit(-1);
-        }
+        // This needs a better solution becvause if you call it before the 5s is up it fails with null pointers
+        // because the client is not initialised
+//        try {
+//            Thread.sleep(5000);
+//        }
+//        catch(Exception e) {
+//            System.out.println("Error initializing the server. Now exiting.");
+//            System.exit(-1);
+//        }
         logMsg(strLabel, "TreeMapServer<init> ", "Starting MapClient with shardConfigFile [" + shardConfigFile + "]");
         client = new MapClient(shardConfigFile, thisShard, thisReplica); // Create clients for talking with other shards
     }

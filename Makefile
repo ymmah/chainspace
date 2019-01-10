@@ -15,6 +15,9 @@ test:
 dist:
 	./contrib/core-tools/build-node-dist.sh
 
+clean-db:
+	echo "TODO: Implement a task to clean the sqlite db so you can repeat transactions"
+
 start-nodes:
 	./contrib/core-tools/easystart.mac.sh
 
