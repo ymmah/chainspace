@@ -88,6 +88,7 @@ public class TreeMapServer extends DefaultRecoverable implements RequestVerifier
         logMsg(strLabel, "TreeMapServer<init> ", "ServiceReplica started");
         // This needs a better solution becvause if you call it before the 5s is up it fails with null pointers
         // because the client is not initialised
+        // Need to do some kind of "waitfor" to wait for it to be available
 //        try {
 //            Thread.sleep(5000);
 //        }
