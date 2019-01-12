@@ -20,14 +20,12 @@ CONTRACT_DIR="../../chainspacecore/contracts"
 
 function init-params {
     export NETWORK_CONFIG=$1
-    export NODE_ID=$2
-    export NETWORK_DIST_TARGET_DIR=$3
+    export NETWORK_DIST_TARGET_DIR=$2
     export NODE_BUILD_DIR="${NETWORK_DIST_TARGET_DIR}/_node_build"
     export CLIENT_API_BUILD_DIR="${NETWORK_DIST_TARGET_DIR}/_client_api"
 }
 
 function show-params {
-    echo "Node id: [${NODE_ID}]"
     echo "Network config [${NETWORK_CONFIG}]"
     echo "Target dir [${NETWORK_DIST_TARGET_DIR}]"
 }
@@ -92,36 +90,63 @@ function clean-build-dirs {
     rm -rf ${CLIENT_API_BUILD_DIR}
 
 }
+
+function get-value-of {
+    REF=$1
+    echo ${!REF}
+}
+
+
+
 function generate-node-dist {
-    echo "Generating a node distribution config:"
-    init-params $@
-    show-params
-    echo ""
 
-    CURRENT_REPLICA=$4 # Temporary until we read it from the config
 
-    echo "Generating replica ${CURRENT_REPLICA}..."
+    NODE_ID=$1
+
+    REPLICA_ID=$(get-value-of "${NODE_ID}_REPLICA_ID")
+
+    echo "Generating a node distribution config for node ${NODE_ID} which is replica [${REPLICA_ID}]"
+
 
     NODE_DIR=${NETWORK_DIST_TARGET_DIR}/${NODE_ID}
 
 
     mkdir -p ${NODE_DIR}
 	cp -r ${NODE_BUILD_DIR}/* ${NODE_DIR}/
-	replace_template_parameter ${NODE_DIR}/config/node/config.txt REPLICA_ID ${CURRENT_REPLICA}
-	replace_template_parameter ${NODE_DIR}/start_node.sh __START_PORT__ 13${CURRENT_REPLICA}10
+	replace_template_parameter ${NODE_DIR}/config/node/config.txt __REPLICA_ID__ ${REPLICA_ID}
+	replace_template_parameter ${NODE_DIR}/start_node.sh __START_PORT__ 13${REPLICA_ID}10
+
+	echo -e ${SHARD_HOST_LIST} >> ${NODE_DIR}/config/shards/S_0/hosts.config
 	chmod +x ${NODE_DIR}/start_node.sh
 }
 
 function generate-client-api-dist {
     echo "Generating a client-api distribution config:"
-    init-params $@
-    echo ""
+    CLIENT_API_DIR="${NETWORK_DIST_TARGET_DIR}/client-api"
+    mkdir -p ${CLIENT_API_DIR}
 
-    CLIENT_API="${NETWORK_DIST_TARGET_DIR}/client-api"
-    mkdir -p ${CLIENT_API}
-
+    cp -r ${CLIENT_API_BUILD_DIR}/* ${CLIENT_API_DIR}
 
 }
+
+
+function generate-nodes {
+    init-params $@
+    show-params
+
+    prepare-build-dirs ${NETWORK_DIST_TARGET_DIR}
+
+    source ${NETWORK_CONFIG}.sh
+
+    generate-client-api-dist ${NETWORK_CONFIG} ${NETWORK_DIST_TARGET_DIR}
+
+    for REPLICA_NODE_ID in ${SHARD_REPLICAS[*]}; do
+        generate-node-dist ${REPLICA_NODE_ID}
+    done
+
+    clean-build-dirs ${NETWORK_DIST_TARGET_DIR}
+}
+
 
 
 
