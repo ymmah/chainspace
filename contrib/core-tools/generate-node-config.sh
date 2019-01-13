@@ -11,12 +11,12 @@ set -o pipefail # https://coderwall.com/p/fkfaqq/safer-bash-scripts-with-set-eux
 CMD=$1
 shift
 
-ROOT_DIR="../.."
+ROOT_DIR="."
 CHAINSPACE_APP_JAR=`ls ${ROOT_DIR}/chainspacecore/target/chainspace*-with-dependencies.jar`
 BFT_JAR=`ls ${ROOT_DIR}/chainspacecore/lib/bft-smart*-DECODE.jar`
 NODE_DIST_TEMPLATE="${ROOT_DIR}/contrib/core-tools/node-dist-template"
 
-CONTRACT_DIR="../../chainspacecore/contracts"
+CONTRACT_DIR="${ROOT_DIR}/chainspacecore/contracts"
 
 function init-params {
     export NETWORK_CONFIG=$1
@@ -120,13 +120,14 @@ function generate-node-dist {
 	chmod +x ${NODE_DIR}/start_node.sh
 }
 
+# TODO - really this should generate 1 client per node - not sure about client talking to replicas though. Needs testing
 function generate-client-api-dist {
     echo "Generating a client-api distribution config:"
     CLIENT_API_DIR="${NETWORK_DIST_TARGET_DIR}/client-api"
     mkdir -p ${CLIENT_API_DIR}
 
     cp -r ${CLIENT_API_BUILD_DIR}/* ${CLIENT_API_DIR}
-
+    echo -e ${SHARD_HOST_LIST} >> ${CLIENT_API_DIR}/config/shards/S_0/hosts.config
 }
 
 

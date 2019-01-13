@@ -12,8 +12,10 @@ build-jar:
 
 test:
 	./contrib/deploy/test.sh
-dist:
-	./contrib/core-tools/build-node-dist-old.sh
+
+local-net:
+	./contrib/core-tools/config-local-network-1-2.sh
+
 
 clean-db:
 	echo "TODO: Implement a task to clean the sqlite db so you can repeat transactions"
