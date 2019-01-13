@@ -171,10 +171,14 @@ public class TreeMapServer extends DefaultRecoverable implements RequestVerifier
         return done;
     }
 
-    private boolean readConfiguration(String configFile) {
+    private boolean readConfiguration(String configFileName) {
         String strModule = "readConfiguration: ";
-        logMsg(strLabel,strModule,"Reading configuration");
+        File configFile = new File(configFileName);
+        logMsg(strLabel,strModule,"Reading configuration from [" + configFile.getAbsolutePath() + "]");
         try {
+            if (!configFile.exists()) {
+                throw new RuntimeException("Could not read config from file " + configFile.getAbsolutePath() + " because it does not exist.");
+            }
             BufferedReader lineReader = new BufferedReader(new FileReader(configFile));
             String line;
             int countLine = 0;
