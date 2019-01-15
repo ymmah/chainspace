@@ -13,6 +13,9 @@ build-jar:
 test:
 	./contrib/deploy/test.sh
 
+dist:
+	./contrib/package/build-dist.sh
+
 local-net:
 	./contrib/core-tools/config-local-network-1-2.sh
 
