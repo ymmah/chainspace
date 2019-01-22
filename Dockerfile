@@ -1,28 +1,9 @@
-FROM alpine:3.6
-
-ARG zenroom_tag=bfa60a9e48b781c09fd9b4fe4bfef865bc127075
-
-WORKDIR /code/zenroom
-
-RUN apk update
-RUN apk upgrade
-RUN apk add --no-cache git openssh git
-
-RUN git clone \
-    https://github.com/DECODEproject/zenroom.git \
-    . \
- && git checkout ${zenroom_tag} \
- && git submodule init \
- && git submodule update
-
-RUN apk add --no-cache make cmake gcc musl-dev musl musl-utils
-RUN make musl-system
-
+FROM dyne/zenroom:0.8.1
 FROM ubuntu:16.04
 
 RUN apt-get update && \
 	apt-get install -y openjdk-8-jdk && \
-	apt-get install -y ant screen virtualenv python python-setuptools wget gzip \
+	apt-get install -y ant screen virtualenv python python-setuptools wget gzip vim \
                            build-essential libssl-dev libffi-dev python-dev maven && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*;
