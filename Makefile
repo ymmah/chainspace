@@ -42,4 +42,8 @@ curl-client-api:
 kill-all:
 	ps aux | grep -v grep | grep chainspace | awk '{print $$2}' | xargs kill -12
 
+test-dist: dist
+	cd ./target/dist && ./node-config.sh generate ./example-networks/localhost-one-shard-two-replicas ../nodes .chainspace.env
+	cd ./target/nodes && tree
+
 
