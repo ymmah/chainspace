@@ -27,7 +27,7 @@ EXAMPLE_NETWORKS_DIR="${ROOT_DIR}/contrib/package/example-networks"
 
 CONTRACT_SRC_DIR="${ROOT_DIR}/chainspacecore/contracts"
 
-echo -e "Copying files accross..."
+echo -e "Copying files across..."
 cp ${CHAINSPACE_APP_JAR} ${LIB_DIR}
 cp ${BFT_JAR} ${LIB_DIR}
 cp ${CONTRACT_SRC_DIR}/* ${CONTRACT_DIR}
@@ -44,6 +44,8 @@ if hash tree 2>/dev/null; then
     tree --dirsfirst
 fi
 cd -
+
+cd ${TARGET_DIR} && tar cfvz ${ROOT_DIR}/target/chainspace-bin-vSNAPSHOT.tgz *
 
 echo -e "\nCompleted building of the distribution.\n"
 
