@@ -39,7 +39,10 @@ cp -r ${EXAMPLE_NETWORKS_DIR} ${TARGET_DIR}
 
 
 cd ${TARGET_DIR}
-tree --dirsfirst
+
+if hash tree 2>/dev/null; then
+    tree --dirsfirst
+fi
 cd -
 
 echo -e "\nCompleted building of the distribution.\n"
