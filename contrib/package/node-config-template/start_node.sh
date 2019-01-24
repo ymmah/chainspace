@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-echo -e "\nStarting Chainspace Node...\n"
+NODE_NAME=$(basename ${PWD})
+
+echo -e "\nStarting Chainspace Node [${NODE_NAME}]...\n"
 
 echo -e "Working Dir: [${PWD}]\n"
 
@@ -20,6 +22,11 @@ if [[ ${PYTHON_BIN} == "no-python-env-found" ]]; then
     exit 1
 fi
 
+LOG_DIR=/var/log/chainspace
+mkdir -p ${LOG_DIR}
+
+LOG_FILE=${LOG_DIR}/${NODE_NAME}-system.log
+
 set -x
-java -Dchecker.python.bin=${PYTHON_BIN} -Dchecker.start.port=${CHECKER_START_PORT} -cp ${BFT_SMART_LIB}:${CHAINSPACE_JAR} ${MAIN_CLASS} ${CONFIG_FILE}
+java -Dchecker.python.bin=${PYTHON_BIN} -Dchecker.start.port=${CHECKER_START_PORT} -cp ${BFT_SMART_LIB}:${CHAINSPACE_JAR} ${MAIN_CLASS} ${CONFIG_FILE} &> ${LOG_FILE} &
 set +x

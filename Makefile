@@ -10,6 +10,9 @@ list-nodes:
 build-jar:
 	cd chainspacecore && mvn -Dversion=1.0-SNAPSHOT -DskipTests=true package assembly:single
 
+build-docker:
+	docker build -t decodeproject/chainspace:SNAPSHOT .
+
 test:
 	./contrib/deploy/test.sh
 
@@ -43,7 +46,7 @@ kill-all:
 	ps aux | grep -v grep | grep chainspace | awk '{print $$2}' | xargs kill -12
 
 test-dist: dist
-	cd ./target/dist && ./node-config.sh generate ./example-networks/localhost-one-shard-two-replicas ../nodes .chainspace.env
+	cd ./target/dist && ./node-config.sh generate ./example-networks/localhost-one-shard-two-replicas ../chainspace-nodes .chainspace.env
 	cd ./target/nodes && tree
 
 

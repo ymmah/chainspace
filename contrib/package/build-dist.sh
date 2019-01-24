@@ -27,6 +27,9 @@ EXAMPLE_NETWORKS_DIR="${ROOT_DIR}/contrib/package/example-networks"
 
 CONTRACT_SRC_DIR="${ROOT_DIR}/chainspacecore/contracts"
 
+CHAINSPACE_API_DIR="${ROOT_DIR}/chainspaceapi"
+CHAINSPACE_CONTRACT_DIR="${ROOT_DIR}/chainspacecontract"
+
 echo -e "Copying files across..."
 cp ${CHAINSPACE_APP_JAR} ${LIB_DIR}
 cp ${BFT_JAR} ${LIB_DIR}
@@ -36,6 +39,9 @@ cp -r ${NODE_CONFIG_TEMPLATE} ${TARGET_DIR}
 
 cp ${BIN_DIR}/* ${TARGET_DIR}
 cp -r ${EXAMPLE_NETWORKS_DIR} ${TARGET_DIR}
+
+cp -r ${CHAINSPACE_API_DIR} ${LIB_DIR}
+cp -r ${CHAINSPACE_CONTRACT_DIR} ${LIB_DIR}
 
 
 cd ${TARGET_DIR}
