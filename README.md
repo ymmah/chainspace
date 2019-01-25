@@ -11,7 +11,7 @@ Chainspace is a decentralised application. This means that to use it you must in
 
 ## Run a network locally using Docker
 
-You will need Docker installed. It is possible to run everything directly on your machine but the setup is more involved. See [here](docs/local-dev-setup.md) for more details.
+You will need Docker installed. It is possible to run everything directly on your machine but the setup is more involved. See [here](./docs/local-dev-setup.md) for more details.
 
 Published on dockerhub @ [https://hub.docker.com/r/decodeproject/chainspace-java](https://hub.docker.com/r/decodeproject/chainspace-java).
 
