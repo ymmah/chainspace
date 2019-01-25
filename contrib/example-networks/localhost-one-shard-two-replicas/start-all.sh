@@ -6,7 +6,7 @@ set -o pipefail # https://coderwall.com/p/fkfaqq/safer-bash-scripts-with-set-eux
 #set -x # for debugging each command
 
 
-NODE_CONFIG_DIR=${1:-../chainspace-nodes}
+NODE_CONFIG_DIR=${1:-.}
 
 CUR_DIR=${PWD}
 

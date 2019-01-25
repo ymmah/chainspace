@@ -173,9 +173,10 @@ def create_petition_checker(inputs, reference_inputs, parameters, outputs, retur
 
         write_data(petition)
 
-        output = loads(execute_zenroom('verify_init.lua', DATA_PATH))
+        #output = loads(execute_zenroom('verify_init.lua', DATA_PATH))
 
-        return output["ok"]
+        #return output["ok"]
+        # temporarly disabled until we make some mock lua scripts
 
     except (KeyError, Exception):
         return False

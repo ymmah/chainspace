@@ -24,7 +24,7 @@ BFT_JAR=`ls ${ROOT_DIR}/chainspacecore/lib/bft-smart*-DECODE.jar`
 NODE_CONFIG_TEMPLATE="${ROOT_DIR}/contrib/package/node-config-template"
 BIN_DIR="${ROOT_DIR}/contrib/package/bin"
 
-CONTRACT_SRC_DIR="${ROOT_DIR}/chainspacecore/contracts"
+CONTRACT_SRC_DIR="${ROOT_DIR}/chainspacecontract/chainspacecontract/examples"
 
 CHAINSPACE_API_DIR="${ROOT_DIR}/chainspaceapi"
 CHAINSPACE_CONTRACT_DIR="${ROOT_DIR}/chainspacecontract"
@@ -32,7 +32,15 @@ CHAINSPACE_CONTRACT_DIR="${ROOT_DIR}/chainspacecontract"
 echo -e "Copying files across..."
 cp ${CHAINSPACE_APP_JAR} ${LIB_DIR}
 cp ${BFT_JAR} ${LIB_DIR}
-cp ${CONTRACT_SRC_DIR}/* ${CONTRACT_DIR}
+
+CONTRACTS_TO_COPY="${CONTRACT_SRC_DIR}/addition.py \
+                   ${CONTRACT_SRC_DIR}/petition_encrypted.py \
+                   ${CONTRACT_SRC_DIR}/zenroom_petition.py"
+
+for CONTRACT in ${CONTRACTS_TO_COPY[*]}; do
+    cp ${CONTRACT} ${CONTRACT_DIR}
+done
+
 
 cp -r ${NODE_CONFIG_TEMPLATE} ${TARGET_DIR}
 

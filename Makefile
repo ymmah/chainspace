@@ -53,5 +53,9 @@ kill-all:
 
 test-dist: dist
 	cd ./target/dist && ./node-config.sh generate ../../contrib/example-networks/localhost-one-shard-two-replicas/localhost-one-shard-two-replicas ../chainspace-nodes .chainspace.env
-	cd ./target/nodes && tree
+	pwd
+	cp ./contrib/example-networks/localhost-one-shard-two-replicas/start-all.sh ./target/chainspace-nodes/
+	cd ./target/chainspace-nodes && tree
 
+start-dist:
+	cd target/chainspace-nodes && ./start-all.sh
