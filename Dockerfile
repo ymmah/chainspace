@@ -8,33 +8,30 @@ RUN apt-get update && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*;
 
-RUN easy_install pip
-
-
 COPY --from=0 /code/zenroom/src/zenroom-static /usr/bin/zenroom
 COPY --from=0 /code/zenroom/examples/elgamal  /opt/contracts/
 
-WORKDIR /app
-COPY target/chainspace-bin-vSNAPSHOT.tgz .
+RUN easy_install pip
 
-RUN pwd && ls
+WORKDIR /app
+
+RUN virtualenv .chainspace.env
+RUN . .chainspace.env/bin/activate && pip install -U setuptools
+RUN . .chainspace.env/bin/activate && pip install petlib numpy bplib coconut-lib
+
+
+COPY target/chainspace-bin-vSNAPSHOT.tgz /app/
 
 WORKDIR /app/chainspace
 
 RUN tar xfz /app/chainspace-bin-vSNAPSHOT.tgz
 
-RUN ls
+WORKDIR /app
 
-RUN ./node-config.sh generate ./example-networks/localhost-one-shard-two-replicas ../chainspace-nodes .chainspace.env
+RUN . .chainspace.env/bin/activate && pip install -e chainspace/lib/chainspaceapi
+RUN . .chainspace.env/bin/activate && pip install -e chainspace/lib/chainspacecontract
 
 
-WORKDIR /app/chainspace-nodes
 
-RUN virtualenv .chainspace.env
-RUN . .chainspace.env/bin/activate && pip install -U setuptools
-RUN . .chainspace.env/bin/activate && pip install -e ../chainspace/lib/chainspaceapi
-RUN . .chainspace.env/bin/activate && pip install -e ../chainspace/lib/chainspacecontract
-RUN . .chainspace.env/bin/activate && pip install petlib numpy bplib coconut-lib
 
-WORKDIR /app/chainspace
-CMD ./start-all.sh
+

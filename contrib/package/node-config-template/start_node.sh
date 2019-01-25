@@ -6,8 +6,10 @@ echo -e "\nStarting Chainspace Node [${NODE_NAME}]...\n"
 
 echo -e "Working Dir: [${PWD}]\n"
 
-BFT_SMART_LIB=lib/bft-smart-1.0.0-DECODE.jar
-CHAINSPACE_JAR=chainspace-1.0-SNAPSHOT-jar-with-dependencies.jar
+
+CHAINSPACE_JAR=`ls chainspace*-with-dependencies.jar`
+BFT_SMART_LIB=`ls lib/bft-smart*-DECODE.jar`
+
 CHECKER_START_PORT=__START_PORT__
 MAIN_CLASS=uk.ac.ucl.cs.sec.chainspace.bft.TreeMapServer
 CONFIG_FILE=config/node/config.txt

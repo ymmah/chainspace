@@ -2,8 +2,9 @@
 
 echo -e "\nStarting Chainspace Client API...\n"
 
-BFT_SMART_LIB=lib/bft-smart-1.0.0-DECODE.jar
-CHAINSPACE_JAR=chainspace-1.0-SNAPSHOT-jar-with-dependencies.jar
+CHAINSPACE_JAR=`ls chainspace*-with-dependencies.jar`
+BFT_SMART_LIB=`ls lib/bft-smart*-DECODE.jar`
+
 CLIENT_API_PORT=5000
 CLIENT_API_DB=../node_0_0/database
 MAIN_CLASS=uk.ac.ucl.cs.sec.chainspace.Client

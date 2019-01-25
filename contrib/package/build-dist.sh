@@ -23,7 +23,6 @@ CHAINSPACE_APP_JAR=`ls ${ROOT_DIR}/chainspacecore/target/chainspace*-with-depend
 BFT_JAR=`ls ${ROOT_DIR}/chainspacecore/lib/bft-smart*-DECODE.jar`
 NODE_CONFIG_TEMPLATE="${ROOT_DIR}/contrib/package/node-config-template"
 BIN_DIR="${ROOT_DIR}/contrib/package/bin"
-EXAMPLE_NETWORKS_DIR="${ROOT_DIR}/contrib/package/example-networks"
 
 CONTRACT_SRC_DIR="${ROOT_DIR}/chainspacecore/contracts"
 
@@ -38,20 +37,22 @@ cp ${CONTRACT_SRC_DIR}/* ${CONTRACT_DIR}
 cp -r ${NODE_CONFIG_TEMPLATE} ${TARGET_DIR}
 
 cp ${BIN_DIR}/* ${TARGET_DIR}
-cp -r ${EXAMPLE_NETWORKS_DIR} ${TARGET_DIR}
 
 cp -r ${CHAINSPACE_API_DIR} ${LIB_DIR}
 cp -r ${CHAINSPACE_CONTRACT_DIR} ${LIB_DIR}
 
+function show-dir() {
+    cd ${TARGET_DIR}
 
-cd ${TARGET_DIR}
+    if hash tree 2>/dev/null; then
+        tree --dirsfirst
+    fi
+    cd -
+}
 
-if hash tree 2>/dev/null; then
-    tree --dirsfirst
-fi
-cd -
+#show-dir
 
-cd ${TARGET_DIR} && tar cfvz ${ROOT_DIR}/target/chainspace-bin-vSNAPSHOT.tgz *
+cd ${TARGET_DIR} && tar cfz ${ROOT_DIR}/target/chainspace-bin-vSNAPSHOT.tgz *
 
 echo -e "\nCompleted building of the distribution.\n"
 
