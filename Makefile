@@ -57,5 +57,14 @@ test-dist: dist
 	cp ./contrib/example-networks/localhost-one-shard-two-replicas/start-all.sh ./target/chainspace-nodes/
 	cd ./target/chainspace-nodes && tree
 
-start-dist:
+clean-dist-db:
+	rm -f target/chainspace-nodes/node_0_0/database.sqlite
+	rm -f target/chainspace-nodes/node_0_1/database.sqlite
+
+start-dist: clean-dist-db
 	cd target/chainspace-nodes && ./start-all.sh
+
+
+system-test:
+	source .chainspace.env/bin/activate && python chainspacecontract/chainspacecontract/system-test/test_increment.py
+	source .chainspace.env/bin/activate && python chainspacecontract/chainspacecontract/system-test/test_petition_encrypted.py
