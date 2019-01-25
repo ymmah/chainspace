@@ -7,108 +7,63 @@ Chainspace is a distributed ledger platform for high-integrity and transparent p
 
 More detailed documentation can be found in the `docs` folder of this repo. 
 
-## Developer Installation
+Chainspace is a decentralised application. This means that to use it you must instantiate a network of `nodes` and then communicate with those.
 
-The bulk of the code is to be found in `chainspacecore`. To run a network of chainspace nodes, you need to first compile and package this module.
+## Run a network locally using Docker
 
+You will need Docker installed. It is possible to run everything directly on your machine but the setup is more involved. See [here](./docs/local-dev-setup.md) for more details.
 
-### Build
-```
-cd chainspacecore
-mvn -Dversion=1.0-SNAPSHOT package assembly:single
-```
-
-This should produce an "uber jar" in the folder `chainspacecore/target`
-
-### Run
-
-There are two parts to chainspace, the client and the network.
-
-The network is a set of nodes that are communicating with each other based on the BFT SMaRt library.
-
-The client is a http server which connects to the network and allows you to submit transactions.
-```
-./contrib/core-tools/easystart.mac.sh
-```
-
-This will show you all running chainspace processes:
-
-```
-ps aux | grep -v grep | grep chainspace | awk '{print $2 $11}'
-ps aux | grep -v grep | grep chainspace | awk '{print $2 " " $11 " " $12 " " $13}'
-```
-
-If you need to kill everything:
-
-```
-ps aux | grep -v grep | grep chainspace | awk '{print $2}' | xargs kill
-```
-
-### Building with Docker 
-
-First, build the container from the Dockerfile
-```
-docker build -t chainspace . 
-```
-
-Then run chainspace with the following command
-```
-docker run -ti -p 5000:5000 --name chainspace chainspace
-```
-
-### With zenroom
-
-If you are going to use contracts that use zenroom you should install it on your computer, here is a small tutorial to install it.
-
-```
-git clone git@github.com:DECODEproject/zenroom.git
-cd zenroom
-
-## Download the dependencies
-git submodule init
-git submodule update
-
-## you should have cmake installed (`brew install cmake`)
-make osx
-
-sudo cp src/zenroom.command /usr/local/bin/zenroom
-```
-
-Also, by convention all zenroom contracts are stored into /opt/contracts, at the moment only the elgamal contract is need, so doing the next steps is enough.
-
-```
-sudo mkdir /opt/contracts
-
-sudo cp -r examples/elgamal/ /opt/contracts/
-```
-
-You can try that everything is working by starting chainspace and execute the zenroom system tests:
-
-```
-source .chainspace.env/bin/activate
-
-cd contrib/core-tools/system-test
-python test_zenroom_petition.py
-```
+Published on dockerhub @ [https://hub.docker.com/r/decodeproject/chainspace-java](https://hub.docker.com/r/decodeproject/chainspace-java).
 
 
+This image just contains the binaries ready for chainspace, but to run a network you need to configure and run some nodes. 
 
-## Developer Setup [IntelliJ Ultimate]
+We have also provided a Dockerfile for that, and so you can run it like this:
 
-There are intellij modules in this folder for each of the submodules. Create a new empty project in intellij. A dialog will prompt you for the project structure, ignore this and wait for the project to load. You will see the .iml module files in the explorer and you can right click and import them to the project from there.
+````
+cd contrib/example-networks/localhost-one-shard-two-replicas
+make build-docker
+make run-docker
+````
 
-You will need to set the project sdk to be a JDK 1.8 and also a python virtualenv which you can create and link to each python module.
+And you should have a dockerised version of 2 nodes running! This setup has two nodes and an api server, which should be available on [http://localhost:5000/api/1.0/](http://localhost:5000/api/1.0/).
 
-The modules are:
+You will see when you run the above command that it is running the client api in the foreground so you can see transactions going through.
 
-- chainspaceapi [python]
-- chainspacecontract [python]
-- chainspacemeasurement [python]
-- chainspacecore [java]
+If you want to look at the logs you can exec into the docker image:
 
-You will need to add petlib manually to your python virtualenv from a shell... Intellij will have created your virtual env somewhere of your choosing indicated here as  (`$PATH_TO_VIRTUAL_ENV$`)...
+````
+docker ps
+docker exec -t -i <container-id> /bin/bash
+````
 
-```
-source $PATH_TO_VIRTUAL_ENV$/bin/activate
-pip install petlib
-```
+Then 
+
+````
+less /var/log/chainspace/node_0_0-system.log
+````
+
+or
+````
+less /var/log/chainspace/node_0_1-system.log
+````
+
+Those are the two nodes.
+
+Finally you can confirm that everything is working by running the following command from a new terminal window:
+
+````
+make system-test
+````
+
+Hopefully you will see something like this:
+
+````
+RESULT OF ALL CONTRACT CALLS: True
+````
+
+Be aware that these tests are stateful so if you try to run them again they will fail because you are creating duplicate objects.
+
+To reset everything you can stop the docker container and re-run it and it should reset the data.
+
+

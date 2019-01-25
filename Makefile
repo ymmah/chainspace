@@ -25,25 +25,6 @@ push-docker:
 test:
 	./contrib/deploy/test.sh
 
-local-net:
-	./contrib/core-tools/config-local-network-1-2.sh
-
-
-clean-db:
-	echo "TODO: Implement a task to clean the sqlite db so you can repeat transactions"
-
-start-nodes:
-	./contrib/core-tools/easystart.mac.sh
-
-start-nodes-debug:
-	./contrib/core-tools/easystart.mac.debug.sh
-
-tail-node:
-	tail -f chainspacecore-0-0/screenlog.0
-
-start-client-api:
-	cd chainspacecore && ./runclientservice.sh
-
 path=/
 curl-client-api:
 	curl -v -H "Accept: application/json" -H "Content-Type: application/json" http://localhost:5000/api/1.0$(path) && echo "\n\n"
