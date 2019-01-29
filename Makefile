@@ -13,7 +13,7 @@ build-jar:
 dist: build-jar
 	./contrib/package/build-dist.sh
 
-build-docker: dist
+build-docker:
 	docker build -t decodeproject/chainspace-java:SNAPSHOT .
 
 bash-docker:
