@@ -40,7 +40,7 @@ RUN virtualenv .chainspace.env
 RUN . .chainspace.env/bin/activate && pip install -U setuptools
 RUN . .chainspace.env/bin/activate && pip install petlib numpy bplib coconut-lib
 
-RUN wget https://sdk.dyne.org:4443/job/chainspace-jar/lastSuccessfulBuild/artifact/target/chainspace-bin-vSNAPSHOT.tgz
+RUN wget -q https://sdk.dyne.org:4443/job/chainspace-jar/lastSuccessfulBuild/artifact/target/chainspace-bin-vSNAPSHOT.tgz
 
 
 WORKDIR /app/chainspace
