@@ -25,7 +25,7 @@ exec ./start_node.sh &
 cd -
 echo "Started."
 
-sleep 2
+sleep 5
 
 echo "Starting client-api ..."
 cd ${NODE_CONFIG_DIR}/client-api
