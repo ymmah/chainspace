@@ -13,6 +13,7 @@ RUN ./node-config.sh generate ../chainspace-network-conf/localhost-one-shard-two
 WORKDIR /app/chainspace-nodes
 
 COPY start-all.sh .
+COPY wait-for-db.sh .
 
 CMD ./start-all.sh
 

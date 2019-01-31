@@ -11,6 +11,7 @@ ssh-docker:
 bash-docker:
 	docker run -t -i decodeproject/chainspace-java-2-nodes:SNAPSHOT /bin/bash
 
-
+push-docker:
+	docker push decodeproject/chainspace-java-2-nodes:SNAPSHOT
 
 
