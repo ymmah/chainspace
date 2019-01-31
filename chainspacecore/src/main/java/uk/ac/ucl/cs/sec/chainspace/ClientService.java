@@ -6,8 +6,11 @@ import spark.Request;
 import spark.Response;
 import spark.Service;
 
+import javax.servlet.ServletRequest;
 import java.io.File;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -123,11 +126,11 @@ class ClientService {
 
 
         JSONObject endpoints = new JSONObject();
-        endpoints.put("index", getExternalUrl("/"));
-        endpoints.put("transactions", getExternalUrl("/transactions"));
-        endpoints.put("objects", getExternalUrl("/objects"));
-        endpoints.put("hashchain", getExternalUrl("/hashchain"));
-        endpoints.put("process-transaction", getExternalUrl("/transaction/process"));
+        endpoints.put("index", getExternalUrl(request, "/"));
+        endpoints.put("transactions", getExternalUrl(request, "/transactions"));
+        endpoints.put("objects", getExternalUrl(request, "/objects"));
+        endpoints.put("hashchain", getExternalUrl(request, "/hashchain"));
+        endpoints.put("process-transaction", getExternalUrl(request, "/transaction/process"));
 
 
         responseJson.put("endpoints", endpoints);
@@ -315,12 +318,17 @@ class ClientService {
      */
     private void printInitMessage() {
 
-        System.out.println("\nChainspace Client API service is running @ " + getExternalUrl("/"));
+        System.out.println("\nChainspace Client API service is running @ http://localhost:" + port +"/api/1.0/");
         System.out.printf("\nReading from local database @ " + databaseName);
     }
 
-    private String getExternalUrl(String path) {
-        return String.format("http://%s:%d/api/%s%s", externalHostName, port, Main.VERSION, path);
+    private String getExternalUrl(Request request, String path) {
+        try {
+            URL url = new URL(request.url());
+            return String.format("%s://%s:%d/api/%s%s", url.getProtocol(), url.getHost(), url.getPort(), Main.VERSION, path);
+        } catch (MalformedURLException e) {
+            return "Unable to parse request url " + request.url();
+        }
     }
 
 
