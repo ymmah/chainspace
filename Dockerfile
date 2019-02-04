@@ -31,6 +31,8 @@ RUN apt-get update && \
 COPY --from=0 /code/zenroom/src/zenroom-static /usr/bin/zenroom
 COPY --from=0 /code/zenroom/examples/elgamal  /opt/contracts/
 
+RUN sed -i 's/^NAME.*/NAME="DECODE OS"/' /etc/os-release
+RUN sed -i 's/^PRETTY_NAME.*/PRETTY_NAME="DECODE OS: github.com\/DECODEproject\/decode-os"/' /etc/os-release
 
 RUN easy_install pip
 
